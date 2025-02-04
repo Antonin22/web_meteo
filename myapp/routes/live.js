@@ -4,6 +4,7 @@ var router = express.Router()
 
 const { InfluxDB, Point } = require('@influxdata/influxdb-client')
 
+// process.env.INFLUXDB_TOKEN
 const token = process.env.INFLUXDB_TOKEN
 const url = 'http://localhost:8086'
 const client = new InfluxDB({ url, token })
@@ -11,16 +12,14 @@ let org = `thomas_et_antonin`
 let bucket = `db32`
 let queryClient = client.getQueryApi(org)
 let tableObject
-let fluxQuery = `from(bucket: "db32")
-...  |> range(start: -10m)
-...  |> filter(fn: (r) => r._measurement == "measurement1")`
 
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
+  console.log("oui")
   let queryClient = client.getQueryApi(org)
-  let fluxQuery = `from(bucket: "my-bucket")
- |> range(start: -10m)
+  let fluxQuery = `from(bucket: "${bucket}")
+ |> range(start: -6h)
  |> filter(fn: (r) => r._measurement == "measurement1")`
 
   queryClient.queryRows(fluxQuery, {
@@ -30,7 +29,7 @@ router.get('/', function (req, res, next) {
     },
     error: (error) => {
       console.error('\nError', error)
-      res.send(error);
+      res.header(500).send(error);
     },
     complete: () => {
       console.log('\nSuccess')
