@@ -1,37 +1,44 @@
 var express = require('express')
 var router = express.Router()
 
-repl.repl.ignoreUndefined=true
 
-const {InfluxDB, Point} = require('@influxdata/influxdb-client')
+const { InfluxDB, Point } = require('@influxdata/influxdb-client')
 
 const token = process.env.INFLUXDB_TOKEN
 const url = 'http://localhost:8086'
-
-const client = new InfluxDB({url, token})
-
+const client = new InfluxDB({ url, token })
 let org = `thomas_et_antonin`
 let bucket = `db32`
-
-
-
 let queryClient = client.getQueryApi(org)
+let tableObject
 let fluxQuery = `from(bucket: "db32")
+...  |> range(start: -10m)
+...  |> filter(fn: (r) => r._measurement == "measurement1")`
+
+
+/* GET users listing. */
+router.get('/', function (req, res, next) {
+  let queryClient = client.getQueryApi(org)
+  let fluxQuery = `from(bucket: "my-bucket")
  |> range(start: -10m)
  |> filter(fn: (r) => r._measurement == "measurement1")`
 
-queryClient.queryRows(fluxQuery, {
-  next: (row, tableMeta) => {
-    const tableObject = tableMeta.toObject(row)
-    console.log(tableObject)
-  },
-  error: (error) => {
-    console.error('\nError', error)
-  },
-  complete: () => {
-    console.log('\nSuccess')
-  },
-})
+  queryClient.queryRows(fluxQuery, {
+    next: (row, tableMeta) => {
+      tableObject = tableMeta.toObject(row)
+      console.log(tableObject)
+    },
+    error: (error) => {
+      console.error('\nError', error)
+      res.send(error);
+    },
+    complete: () => {
+      console.log('\nSuccess')
+      res.send(tableObject);
+    },
+  })
+  
+});
 
 
 
