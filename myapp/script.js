@@ -78,8 +78,8 @@ function readGPSFile() {
     });
 }
 
-function readTPGFile() {
-    fs.readFile('./dev/shm/tpg.log', 'utf8', (error, data) => {
+function readTPHFile() {
+    fs.readFile('./dev/shm/tph.log', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture TPG:', error);
             return;
@@ -87,7 +87,7 @@ function readTPGFile() {
 
         try {
             const tpg = JSON.parse(data);
-            const point = new Point('tpg_sensors')
+            const point = new Point('tph_sensors')
                 .floatField('temperature', tpg.temp)
                 .floatField('humidity', tpg.hygro)
                 .floatField('pressure', tpg.press)
@@ -106,7 +106,7 @@ function checkFiles() {
 
     readGPSFile();
 
-    //readTPGFile();
+    readTPHFile();
 }
 
 setInterval(checkFiles, 30000);

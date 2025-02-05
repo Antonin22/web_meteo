@@ -77,6 +77,19 @@ router.get('/', function (req, res, next) {
             break;
         }
       }
+      if (req._measurement == "tph_sensors") {
+        switch (req._field) {
+          case 'pressure':
+            data.data.pressure = req._value;
+            break;
+          case 'temperature':
+            data.data.temperature = req._value;
+            break;
+          case 'humidity':
+            data.data.humidity = req._value;
+            break;
+        }
+      }
     },
     error: (error) => {
       console.error('\nError', error)
