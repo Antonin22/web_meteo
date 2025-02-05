@@ -10,13 +10,43 @@ block content
 
     div
       strong Température: 
-      span {{ temperature }} C
+      span {{ data.temperature }} C
     
     div 
-      strong Hygrométrie: 
-      span {{ humidity }} %
+      strong Pression: 
+      span {{ data.pressure }} %
+
+    div
+      strong Humidité: 
+      span {{ data.humidity }} 
+
+    div
+      strong Luminosité: 
+      span {{ data.lux }} Pa
+
+    div
+      strong Vent: 
+      span {{ data.wind_heading }} 
 
     div
       strong Pression: 
-      span {{ pressure }} Pa
+      span {{ data.pressure }} Pa
 
+    div
+      strong Vitesse du vent: 
+      span {{ data.wind_speed_avg }} 
+
+    div
+      strong Hygrométrie: 
+      span {{ data.hygro }} 
+
+    div
+      strong Latitude: 
+      span {{ data.lat }} 
+
+    div
+      strong Longitude: 
+      span {{ data.long }} 
+
+  #map(style="height: 400px; margin-top: 20px;")
+  canvas#myChart(style="max-width: 600px; margin-top: 20px;")
