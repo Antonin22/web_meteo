@@ -13,3 +13,32 @@
       "long": 2.2
     }
   }
+
+
+
+  {
+    "id": 27,
+    "unit": {
+      "temperature": "C",
+      "pressure": "hP",
+      "humidity": "%",
+      "rain": "mm/m2",
+      "luminosity": "Lux",
+      "wind_heading": "°",
+      "wind_speed_avg": "km/h",
+      "lat": "DD",
+      "lon": "DD"
+    },
+    "data": {
+      "date": "2025-02-04T08:23:54.313Z",
+      "temperature": 6.4,
+      "pressure": 995,
+      "humidity": 50.1,
+      "luminosity": 7,
+      "wind_heading": 90,
+      "wind_speed_avg": 70,
+      "rain": 14.131,
+      "lat": 48.5,
+      "long": 2.2
+    }
+  }

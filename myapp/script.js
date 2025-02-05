@@ -63,12 +63,10 @@ function readGPSFile() {
                     if (parts[2] === 'A') { 
                         const latitude = parseFloat(parts[3]) / 100;
                         const longitude = parseFloat(parts[5]) / 100;
-                        const speed = parseFloat(parts[7]);
                         
                         const point = new Point('gps_data')
                             .floatField('latitude', latitude)
                             .floatField('longitude', longitude)
-                            .floatField('speed', speed)
                             .timestamp(new Date());
                         writeClient.writePoint(point);
                     }
