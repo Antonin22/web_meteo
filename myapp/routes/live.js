@@ -103,4 +103,104 @@ router.get('/', function (req, res, next) {
   })
 });
 
+router.get('/:list_capteur', function (req, res, next) {
+  const requestedSensors = req.params.list_capteur.split('-');
+  
+  let filteredData = {
+    id: 32,
+    unit: {},
+    data: {
+      date: new Date().toISOString()
+    }
+  };
+
+  const possibleSensors = {
+    'temperature': 'C',
+    'pressure': 'hP',
+    'humidity': '%',
+    'rain': 'mm/m2',
+    'luminosity': 'Lux',
+    'wind_heading': '°',
+    'wind_speed_avg': 'km/h',
+    'lat': 'DD',
+    'long': 'DD'
+  };
+
+  requestedSensors.forEach(sensor => {
+    if (possibleSensors[sensor]) {
+      filteredData.unit[sensor] = possibleSensors[sensor];
+    }
+  });
+
+  let queryClient = client.getQueryApi(org);
+  let fluxQuery = `from(bucket: "${bucket}")
+    |> range(start: -1y)
+    |> last()`;
+
+  queryClient.queryRows(fluxQuery, {
+    next: (row, tableMeta) => {
+      let req = tableMeta.toObject(row);
+      
+      if (req._measurement == "gps_data") {
+        if (requestedSensors.includes('lat') && req._field == 'latitude') {
+          filteredData.data.lat = req._value;
+        }
+        if (requestedSensors.includes('long') && req._field == 'longitude') {
+          filteredData.data.long = req._value;
+        }
+      }
+      
+      if (req._measurement == "weather_sensors") {
+        const sensorMappings = {
+          'pressure': 'pressure',
+          'wind_heading': 'wind_heading',
+          'humidity': 'humidity',
+          'wind_speed_avg': 'wind_speed_avg',
+          'temperature': 'temperature',
+          'luminosity': 'luminosity',
+          'rain': 'rain'
+        };
+        
+        Object.entries(sensorMappings).forEach(([key, value]) => {
+          if (requestedSensors.includes(key) && req.sensor === value) {
+            filteredData.data[key] = req._value;
+          }
+        });
+      }
+      
+      if (req._measurement == "tph_sensors") {
+        if (requestedSensors.includes('pressure') && req._field == 'pressure') {
+          filteredData.data.pressure = req._value;
+        }
+        if (requestedSensors.includes('temperature') && req._field == 'temperature') {
+          filteredData.data.temperature = req._value;
+        }
+        if (requestedSensors.includes('humidity') && req._field == 'humidity') {
+          filteredData.data.humidity = req._value;
+        }
+      }
+    },
+    error: (error) => {
+      console.error('\nError', error);
+      res.status(500).send(error);
+    },
+    complete: () => {
+      const validSensors = Object.keys(possibleSensors);
+      const hasInvalidSensor = requestedSensors.some(sensor => !validSensors.includes(sensor));
+      
+      if (hasInvalidSensor) {
+        res.status(400).json({
+          message: "A query argument is invalid"
+        });
+        return;
+      }
+      
+      console.log(filteredData);
+      console.log('\nSuccess');
+      res.send(filteredData);
+    },
+  });
+});
+
+
 module.exports = router
