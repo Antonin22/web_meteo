@@ -44,7 +44,7 @@ function processSensorData(row, tableMeta, requestedSensors, filteredData) {
         if (requestedSensors.includes('lon') && req._field == 'longitude') {
             filteredData.data.push({
                 time: req._time,
-                long: req._value
+                lon: req._value
             });
         }
     }

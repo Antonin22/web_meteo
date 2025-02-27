@@ -5,35 +5,38 @@ var router = express.Router()
 const { InfluxDB, Point } = require('@influxdata/influxdb-client')
 
 // process.env.INFLUXDB_TOKEN
-const token = process.env.INFLUXDB_TOKEN
+const token = "bwIx0QUhlQN2Ifvi2rS1pOgqZe9eqgsscBcPMqsQnlZCifNrGGyt8EzkfxwlXwt4U9DwVAS9njL2FRx1VnYiQg=="
 const url = 'http://localhost:8086'
 const client = new InfluxDB({ url, token })
 let org = `ENSG`
 let bucket = `db32`
 let queryClient = client.getQueryApi(org)
 let tableObjects = []
-let data = { "id": 32 ,"unit": {
-      "temperature": "C",
-      "pressure": "hP",
-      "humidity": "%",
-      "rain": "mm/m2",
-      "luminosity": "Lux",
-      "wind_heading": "°",
-      "wind_speed_avg": "km/h",
-      "lat": "DD",
-      "lon": "DD"
-    },
-  "data":{
-  date:new Date().toISOString(),
-  temperature:null,
-  pressure:null,
-  humidity:null,
-  luminosity:null,
-  wind_heading:null,
-  wind_speed_avg:null,
-  lat:null,
-  long:null
-}};
+let data = {
+  "id": 32, "unit": {
+    "temperature": "C",
+    "pressure": "hP",
+    "humidity": "%",
+    "rain": "mm/m2",
+    "luminosity": "Lux",
+    "wind_heading": "°",
+    "wind_speed_avg": "km/h",
+    "lat": "DD",
+    "lon": "DD"
+  },
+  "data": {
+    date: new Date().toISOString(),
+    temperature: null,
+    pressure: null,
+    humidity: null,
+    luminosity: null,
+    wind_heading: null,
+    wind_speed_avg: null,
+    rain: 1,
+    lat: null,
+    lon: null
+  }
+};
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -51,7 +54,7 @@ router.get('/', function (req, res, next) {
             data.data.lat = req._value;
             break;
           case 'longitude':
-            data.data.long = req._value;
+            data.data.lon = req._value;
             break;
         }
       }
@@ -105,7 +108,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/:list_capteur', function (req, res, next) {
   const requestedSensors = req.params.list_capteur.split('-');
-  
+
   let filteredData = {
     id: 32,
     unit: {},
@@ -140,16 +143,16 @@ router.get('/:list_capteur', function (req, res, next) {
   queryClient.queryRows(fluxQuery, {
     next: (row, tableMeta) => {
       let req = tableMeta.toObject(row);
-      
+
       if (req._measurement == "gps_data") {
         if (requestedSensors.includes('lat') && req._field == 'latitude') {
           filteredData.data.lat = req._value;
         }
-        if (requestedSensors.includes('long') && req._field == 'longitude') {
-          filteredData.data.long = req._value;
+        if (requestedSensors.includes('lon') && req._field == 'longitude') {
+          filteredData.data.lon = req._value;
         }
       }
-      
+
       if (req._measurement == "weather_sensors") {
         const sensorMappings = {
           'pressure': 'pressure',
@@ -160,14 +163,14 @@ router.get('/:list_capteur', function (req, res, next) {
           'luminosity': 'luminosity',
           'rain': 'rain'
         };
-        
+
         Object.entries(sensorMappings).forEach(([key, value]) => {
           if (requestedSensors.includes(key) && req.sensor === value) {
             filteredData.data[key] = req._value;
           }
         });
       }
-      
+
       if (req._measurement == "tph_sensors") {
         if (requestedSensors.includes('pressure') && req._field == 'pressure') {
           filteredData.data.pressure = req._value;
@@ -187,14 +190,14 @@ router.get('/:list_capteur', function (req, res, next) {
     complete: () => {
       const validSensors = Object.keys(possibleSensors);
       const hasInvalidSensor = requestedSensors.some(sensor => !validSensors.includes(sensor));
-      
+
       if (hasInvalidSensor) {
         res.status(400).json({
           message: "A query argument is invalid"
         });
         return;
       }
-      
+
       console.log(filteredData);
       console.log('\nSuccess');
       res.send(filteredData);
