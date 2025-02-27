@@ -4,7 +4,7 @@ var router = express.Router();
 const { InfluxDB } = require('@influxdata/influxdb-client');
 
 // Configuration InfluxDB
-const token = process.env.INFLUXDB_TOKEN;
+const token = 'bwIx0QUhlQN2Ifvi2rS1pOgqZe9eqgsscBcPMqsQnlZCifNrGGyt8EzkfxwlXwt4U9DwVAS9njL2FRx1VnYiQg==';
 const url = 'http://localhost:8086';
 const client = new InfluxDB({ url, token });
 const org = `ENSG`;
