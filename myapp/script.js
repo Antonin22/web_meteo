@@ -1,14 +1,14 @@
 const fs = require('fs');
 const { InfluxDB, Point } = require('@influxdata/influxdb-client');
 
-const token = process.env.INFLUXDB_TOKEN;
+const token = 'bwIx0QUhlQN2Ifvi2rS1pOgqZe9eqgsscBcPMqsQnlZCifNrGGyt8EzkfxwlXwt4U9DwVAS9njL2FRx1VnYiQg==';
 const url = 'http://localhost:8086';
 const client = new InfluxDB({ url, token });
 const writeClient = client.getWriteApi('ENSG', 'db32', 'ns');
 
 
 function readSensorsFile() {
-    fs.readFile('./dev/shm/sensors', 'utf8', (error, data) => {  
+    fs.readFile('./dev/shm/sensors', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture sensors:', error);
             return;
@@ -60,10 +60,10 @@ function readGPSFile() {
             for (const line of lines) {
                 if (line.startsWith('$GPRMC')) {
                     const parts = line.split(',');
-                    if (parts[2] === 'A') { 
+                    if (parts[2] === 'A') {
                         const latitude = parseFloat(parts[3]) / 100;
                         const longitude = parseFloat(parts[5]) / 100;
-                        
+
                         const point = new Point('gps_data')
                             .floatField('latitude', latitude)
                             .floatField('longitude', longitude)
