@@ -5,9 +5,9 @@ var router = express.Router()
 const { InfluxDB, Point } = require('@influxdata/influxdb-client')
 
 // process.env.INFLUXDB_TOKEN
-const token = "bwIx0QUhlQN2Ifvi2rS1pOgqZe9eqgsscBcPMqsQnlZCifNrGGyt8EzkfxwlXwt4U9DwVAS9njL2FRx1VnYiQg=="
-const url = 'http://localhost:8086'
-const client = new InfluxDB({ url, token })
+const token = 'bwIx0QUhlQN2Ifvi2rS1pOgqZe9eqgsscBcPMqsQnlZCifNrGGyt8EzkfxwlXwt4U9DwVAS9njL2FRx1VnYiQg==';
+const url = 'http://localhost:8086';
+const client = new InfluxDB({ url, token });
 let org = `ENSG`
 let bucket = `db32`
 let queryClient = client.getQueryApi(org)
