@@ -1,0 +1,516 @@
+openapi: 3.0.3
+info:
+  title: PiMeteo - OpenAPI 3.0
+  description: |-
+    Projet JavascriptAvancé des TSI24 consistant à un dashboard météo associé à des RaspberryPi !
+  version: 1.0.0
+servers:
+  - url: https://piensg027.ensg.eu
+  - url: https://piensg028.ensg.eu
+  - url: https://piensg030.ensg.eu
+  - url: https://piensg031.ensg.eu
+  - url: https://piensg032.ensg.eu
+tags:
+  - name: live
+    description: Tout sur tes données météo en temps réel !
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: sample
+    description: Tout sur tes données météo sur une période !
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+
+  /live:
+    get:
+      tags:
+        - live
+      summary: Données en temps réel de tous les capteurs
+      operationId: liveAll
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Live'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+  
+  /live/{list_capteur}:
+    get:
+      tags:
+        - live
+      summary: Données en temps réel de quelques capteurs
+      operationId: liveSensor
+      parameters:
+        - name: list_capteur
+          in: path
+          description: Liste des capteurs de type "temperature-pressure-humidity-lat-long" 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LiveSensor'
+        '400':
+          description: A query argument is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+  
+  /sample/{start}/now:
+    get:
+      tags:
+        - sample
+      summary: Données à partir d'une date jusqu'à maintenant de tous les capteurs
+      operationId: sampleStartNow
+      parameters:
+        - name: start
+          in: path
+          description: Date de départ "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleStart'
+        '400':
+          description: A query argument is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+  
+  /sample/{start}/now/{list_capteur}:
+    get:
+      tags:
+        - sample
+      summary: Données à partir d'une date jusqu'à maintenant de quelques capteurs
+      operationId: sampleStartNowSensor
+      parameters:
+        - name: start
+          in: path
+          description: Date de départ "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+        - name: list_capteur
+          in: path
+          description: Liste des capteurs de type "temperature-pressure-humidity-lat-long" 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleStartSensor'
+        '400':
+          description: A query argument is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+  
+  /sample/{start}/{stop}:
+    get:
+      tags:
+        - sample
+      summary: Données à partir d'une date jusqu'à une autre date de tous les capteurs
+      operationId: sampleStartStop
+      parameters:
+        - name: start
+          in: path
+          description: Date de départ "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+        - name: stop
+          in: path
+          description: Date de fin "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleStart'
+        '400':
+          description: A query argument is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+  
+  /sample/{start}/{stop}/{list_capteur}:
+    get:
+      tags:
+        - sample
+      summary: Données à partir d'une date jusqu'à une autre date de quelques capteurs
+      operationId: sampleStartStopSensor
+      parameters:
+        - name: start
+          in: path
+          description: Date de départ "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+        - name: stop
+          in: path
+          description: Date de fin "2015-08-23T18:45:00.000Z"
+          required: true
+          schema:
+            type: string
+            format: UTC
+        - name: list_capteur
+          in: path
+          description: Liste des capteurs de type "temperature-pressure-humidity-lat-long" 
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SampleStartSensor'
+        '400':
+          description: A query argument is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error400'
+        '404':
+          description: The requested station is not in the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error404'
+          
+components:
+  schemas:
+    
+    Live:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 027
+        unit:
+          $ref: '#/components/schemas/DataUnit'
+        data:
+          $ref: '#/components/schemas/Datalive'
+
+    
+    DataUnit:
+      type: object
+      properties:
+        temperature:
+          type: string
+          example: "C"
+        pressure:
+          type: string
+          example: "hP"
+        humidity:
+          type: string
+          example: "%"
+        rain:
+          type: string
+          example: "mm/m2"
+        luminosity:
+          type: string
+          example: "Lux"
+        wind_heading:
+          type: string
+          example: "°"
+        wind_speed_avg:
+          type: string
+          example: "km/h"
+        lat:
+          type: string
+          example: "DD"
+        lon:
+          type: string
+          example: "DD"
+          
+    DataUnitSample:
+      type: object
+      properties:
+        temperature:
+          type: string
+          example: "C"
+        pressure:
+          type: string
+          example: "hP"
+        humidity:
+          type: string
+          example: "%"
+        lat:
+          type: string
+          example: "DD"
+        lon:
+          type: string
+          example: "DD"
+        
+    Datalive:
+      type: object
+      properties:
+        date:
+          type: string
+          format: int64
+          example: "2025-02-04T08:23:54.313Z"
+        temperature:
+          type: number
+          format: int64
+          example: 6.4
+        pressure:
+          type: number
+          format: int64
+          example: 995.00
+        humidity:
+          type: number
+          format: int64
+          example: 50.1
+        luminosity:
+          type: number
+          format: int64
+          example: 7.0
+        wind_heading:
+          type: integer
+          format: int64
+          example: 90
+        wind_speed_avg:
+          type: integer
+          format: int64
+          example: 70
+        rain:
+          type: number
+          format: int64
+          example: 14.131
+        lat:
+          type: number
+          format: int64
+          example: 48.50
+        long:
+          type: number
+          format: int64
+          example: 2.20
+          
+    Datasample:
+      type: object
+      properties:
+        temperature:
+          type: number
+          format: int64
+          example: 6.4
+        pressure:
+          type: number
+          format: int64
+          example: 995.00
+        humidity:
+          type: number
+          format: int64
+          example: 50.1
+        luminosity:
+          type: number
+          format: int64
+          example: 7.0
+        wind_heading:
+          type: integer
+          format: int64
+          example: 90
+        wind_speed_avg:
+          type: integer
+          format: int64
+          example: 70
+        rain:
+          type: number
+          format: int64
+          example: 14.131
+        lat:
+          type: number
+          format: int64
+          example: 48.50
+        long:
+          type: number
+          format: int64
+          example: 2.20
+    
+    LiveSensor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 027
+        unit:
+          $ref: '#/components/schemas/DataUnitSample'
+        data:
+          $ref: '#/components/schemas/Datalivesensor'
+    
+    Datalivesensor:
+      type: object
+      properties:
+        date:
+          type: string
+          format: int64
+          example: "2025-02-04T08:23:54.313Z"
+        temperature:
+          type: number
+          format: int64
+          example: 6.4
+        pressure:
+          type: number
+          format: int64
+          example: 995.00
+        humidity:
+          type: number
+          format: int64
+          example: 50.1
+        lat:
+          type: number
+          format: int64
+          example: 48.50
+        long:
+          type: number
+          format: int64
+          example: 2.
+      
+    Datasamplesensor:
+      type: object
+      properties:
+        temperature:
+          type: number
+          format: int64
+          example: 6.4
+        pressure:
+          type: number
+          format: int64
+          example: 995.00
+        humidity:
+          type: number
+          format: int64
+          example: 50.1
+        lat:
+          type: number
+          format: int64
+          example: 48.50
+        long:
+          type: number
+          format: int64
+          example: 2.20
+          
+    SampleStart:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 027
+        unit:
+          $ref: '#/components/schemas/DataUnit'
+        data:
+          $ref: '#/components/schemas/SampleData'
+          
+    SampleData:
+      type: object
+      properties:
+        2025-02-04T08:23:54.313Z:
+          $ref: '#/components/schemas/Datasample'
+        2025-03-04T08:23:54.313Z:
+          $ref: '#/components/schemas/Datasample'
+          
+    SampleStartSensor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 027
+        unit:
+          $ref: '#/components/schemas/DataUnitSample'
+        data:
+          $ref: '#/components/schemas/SampleDataSensor'
+          
+    SampleDataSensor:
+      type: object
+      properties:
+        2025-02-04T08:23:54.313Z:
+          $ref: '#/components/schemas/Datasamplesensor'
+        2025-03-04T08:23:54.313Z:
+          $ref: '#/components/schemas/Datasamplesensor'
+          
+    error400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "A query argument is invalid"
+          
+    error404:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "The requested station is not in the database"
+
+          
+  requestBodies:
+    Live:
+      description: Pet object that needs to be added to the store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Live'

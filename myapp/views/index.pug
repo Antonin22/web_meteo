@@ -2,51 +2,7 @@ extends layout
 
 block content
   h1= title
-  p Welcome to oui #{title}
+  p Bienvenue sur le dashboard météo !
+  #app  <!-- Ce div sera géré par Vue.js -->
 
-  #app
-    h2 Dashboard Météo 
-    p {{ message }}
-
-    div
-      strong Température: 
-      span {{ data.temperature }} C
-    
-    div 
-      strong Pression: 
-      span {{ data.pressure }} %
-
-    div
-      strong Humidité: 
-      span {{ data.humidity }} 
-
-    div
-      strong Luminosité: 
-      span {{ data.lux }} Pa
-
-    div
-      strong Vent: 
-      span {{ data.wind_heading }} 
-
-    div
-      strong Pression: 
-      span {{ data.pressure }} Pa
-
-    div
-      strong Vitesse du vent: 
-      span {{ data.wind_speed_avg }} 
-
-    div
-      strong Hygrométrie: 
-      span {{ data.hygro }} 
-
-    div
-      strong Latitude: 
-      span {{ data.lat }} 
-
-    div
-      strong Longitude: 
-      span {{ data.long }} 
-
-  #map(style="height: 400px; margin-top: 20px;")
-  canvas#myChart(style="max-width: 600px; margin-top: 20px;")
+  script(src="/javascripts/main.js")  <!-- Le fichier JS de Vue.js -->

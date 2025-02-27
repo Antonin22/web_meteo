@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Météo</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-Bj5sNSFW71CODHg5NH4R0O/oe7NkMcN7XkWN6g1R4vxhxZKrF+L++PsAme/3YmJvfldjolE1URPXPm+ez+0yg==" crossorigin=""/>
+  <!-- Font Awesome pour les icônes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Styles CSS globaux -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+    
+    /* Classes d'icônes pour les capteurs */
+    .icon-temperature::before { content: '\f76b'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-humidity::before { content: '\f750'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-pressure::before { content: '\f0e4'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-luminosity::before { content: '\f185'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-wind-direction::before { content: '\f72e'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-wind-speed::before { content: '\f72e'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-rain::before { content: '\f73d'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .icon-default::before { content: '\f0c2'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
