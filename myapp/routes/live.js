@@ -152,7 +152,7 @@ router.get('/:list_capteur', function (req, res, next) {
           filteredData.data.lon = req._value;
         }
       }
-      filteredData.rain = 1;
+      filteredData.data.rain = 1;
 
       if (req._measurement == "weather_sensors") {
         const sensorMappings = {
