@@ -47,13 +47,13 @@ export default {
   computed: {
     sensorTitle() {
       const titles = {
-        temperature: 'Température',
-        humidity: 'Humidité',
+        temperature: 'TempÃ©rature',
+        humidity: 'HumiditÃ©',
         pressure: 'Pression',
-        luminosity: 'Luminosité',
+        luminosity: 'LuminositÃ©',
         wind_heading: 'Direction du vent',
         wind_speed_avg: 'Vitesse du vent',
-        rain: 'Précipitations'
+        rain: 'PrÃ©cipitations'
       };
       return titles[this.type] || this.type;
     },
@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     getIconClass() {
-      // Ces classes sont fictives - dans un projet réel, utilisez une bibliothèque d'icônes comme Font Awesome
+  
       const icons = {
         temperature: 'icon-temperature',
         humidity: 'icon-humidity',
@@ -79,21 +79,21 @@ export default {
       return icons[this.type] || 'icon-default';
     },
     formatValue(value) {
-      // Formater la valeur selon le type de capteur
+      
       switch (this.type) {
         case 'temperature':
         case 'humidity':
         case 'pressure':
-          // Arrondir à une décimale
+          
           return Number(value).toFixed(1);
         case 'wind_heading':
-          // Direction du vent en degrés, arrondi à l'entier
+        
           return Math.round(value);
         case 'wind_speed_avg':
-          // Vitesse du vent arrondie à l'entier
+          
           return Math.round(value);
         case 'rain':
-          // Précipitations avec deux décimales
+          
           return Number(value).toFixed(2);
         default:
           return value;

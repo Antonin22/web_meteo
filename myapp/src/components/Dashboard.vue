@@ -93,6 +93,8 @@ export default {
   },
   data() {
     return {
+      
+      useRealApi: true, //  activer l'API
       loading: true,
       error: null,
       data: {
@@ -123,7 +125,7 @@ export default {
   },
   mounted() {
     this.fetchLiveData();
-    // Rafraîchir les données toutes les 60 secondes
+    
     this.refreshInterval = setInterval(() => {
       this.fetchLiveData();
     }, 60000);
@@ -143,24 +145,62 @@ export default {
       this.loading = true;
       this.error = null;
 
+      
+      if (this.useRealApi) {
+        
+        try {
+          console.log('Tentative de récupération des données réelles');
+          const liveData = await getLiveData();
+          
+          if (liveData && liveData.data) {
+            this.data = liveData.data;
+            this.unit = liveData.unit;
+            console.log('Données réelles récupérées:', liveData);
+            this.loading = false;
+            return;
+          } else {
+            throw new Error('Données API invalides');
+          }
+        } catch (apiError) {
+          console.error('Erreur API:', apiError);
+          this.error = "API indisponible - utilisation de données de secours";
+          
+        }
+      }
+
+      
       try {
-        // Pour le développement, utilisez les données mockées
-        // En production, utilisez: const response = await getLiveData();
+        console.log('Chargement des données mockées');
         const response = await fetch('/mock-data.json');
+        
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
         const json_data = await response.json();
-        const stationData = json_data.find(station => station.id.toString() === this.stationId.replace('piensg', '')) || json_data[0];
         
-        // Mettre à jour les données et unités
-        this.data = stationData.data;
-        this.unit = stationData.unit;
         
-        // Une fois en production, utilisez ce code à la place:
-        // const liveData = await getLiveData();
-        // this.data = liveData.data;
-        // this.unit = liveData.unit;
-      } catch (error) {
-        console.error('Erreur lors de la récupération des données en temps réel:', error);
+        const stationId = this.stationId.replace('piensg', '');
+        const stationData = json_data.find(station => station.id.toString() === stationId) || json_data[0];
+        
+        if (stationData) {
+          this.data = stationData.data;
+          this.unit = stationData.unit;
+          console.log('Données mockées chargées avec succès:', stationData);
+          this.error = null;
+        } else {
+          throw new Error('Données mockées invalides');
+        }
+      } catch (mockError) {
+        console.warn('Échec du chargement des données mockées:', mockError);
         this.error = "Impossible de charger les données météo";
+        
+        // En dernier recours, utiliser des valeurs aléatoires
+        this.data.date = new Date().toISOString();
+        this.data.temperature = Math.random() * 10 + 15; // 15-25°C
+        this.data.humidity = Math.random() * 30 + 40; // 40-70%
+        this.data.pressure = Math.random() * 20 + 1000; // 1000-1020 hPa
+        console.log('Utilisation de valeurs aléatoires par défaut');
       } finally {
         this.loading = false;
       }

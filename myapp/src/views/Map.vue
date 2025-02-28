@@ -31,30 +31,39 @@ export default {
     }
   },
   mounted() {
-    try {
-      // Créer la carte
-      this.map = L.map('map-container').setView([48.52, 2.22], 12);
-      
-      // Ajouter la couche OpenStreetMap
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(this.map);
-      
-      // Ajouter les marqueurs pour chaque station
-      this.stations.forEach(station => {
-        const marker = L.marker([station.lat, station.lon])
-          .addTo(this.map)
-          .bindPopup(`<b>${station.name}</b><br>Latitude: ${station.lat}<br>Longitude: ${station.lon}`);
+    // Attendre que le DOM soit complètement monté
+    this.$nextTick(() => {
+      try {
+        const mapContainer = document.getElementById('map-container');
+        if (!mapContainer) {
+          console.error("Élément de carte introuvable");
+          return;
+        }
         
-        this.markers.push({
-          stationId: station.id,
-          marker: marker
+        // Créer la carte Leaflet
+        this.map = L.map('map-container').setView([48.52, 2.22], 12);
+        
+        // Ajouter la couche OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(this.map);
+        
+        // Ajouter les marqueurs pour chaque station
+        this.stations.forEach(station => {
+          const marker = L.marker([station.lat, station.lon])
+            .addTo(this.map)
+            .bindPopup(`<b>${station.name}</b><br>Température: --°C<br>Latitude: ${station.lat}<br>Longitude: ${station.lon}`);
+          
+          this.markers.push({
+            stationId: station.id,
+            marker: marker
+          });
         });
-      });
-    } catch (error) {
-      console.error("Erreur lors de l'initialisation de la carte:", error);
-      this.createMapPlaceholder();
-    }
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation de la carte Leaflet:", error);
+        this.createMapPlaceholder();
+      }
+    });
     
   },
   methods: {
@@ -72,23 +81,29 @@ export default {
       try {
         // Pour chaque station, récupérer les données de température
         for (const station of this.stations) {
-          // En production, vous utiliseriez votre API:
-          // const response = await getLiveSensorData(['temperature']);
-          
-          // Pour le développement, utiliser des données aléatoires
-          const temperature = Math.floor(Math.random() * 15) + 5; // Entre 5 et 20°C
-          this.stationsData[station.id] = { temperature };
-          
-          // Mettre à jour le popup du marqueur avec la température
-          const markerInfo = this.markers.find(m => m.stationId === station.id);
-          if (markerInfo) {
-            // Mettre à jour le popup avec la température
-            markerInfo.marker.setPopupContent(
-              `<b>${station.name}</b><br>Température: ${temperature}°C<br>Lat: ${station.lat}, Lon: ${station.lon}`
-            );
+          try {
+            // En production, utilisez votre API:
+            // const response = await getLiveSensorData(['temperature']);
             
-            // Ouvrir le popup pour montrer la température
-            markerInfo.marker.openPopup();
+            // Pour le développement, utiliser des données aléatoires
+            const temperature = Math.floor(Math.random() * 15) + 5; // Entre 5 et 20°C
+            this.stationsData[station.id] = { temperature };
+            
+            // Trouver le marqueur correspondant
+            const markerInfo = this.markers.find(m => m.stationId === station.id);
+            if (markerInfo) {
+              // Mettre à jour le popup avec la température
+              markerInfo.marker.setPopupContent(
+                `<b>${station.name}</b><br>Température: ${temperature}°C<br>Lat: ${station.lat}, Lon: ${station.lon}`
+              );
+              
+              // Ouvrir le popup pour montrer la température
+              if (Math.random() > 0.7) { // On n'ouvre que quelques popups aléatoirement pour éviter l'encombrement
+                markerInfo.marker.openPopup();
+              }
+            }
+          } catch (stationError) {
+            console.error(`Erreur lors de la mise à jour de la station ${station.id}:`, stationError);
           }
         }
       } catch (error) {

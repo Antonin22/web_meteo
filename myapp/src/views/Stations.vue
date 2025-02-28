@@ -25,6 +25,14 @@
         </select>
       </div>
       
+      <div class="filter-group">
+        <label for="chartType">Type de graphique:</label>
+        <select id="chartType" v-model="chartType" class="filter-select">
+          <option value="line">Linéaire</option>
+          <option value="bar">Bâtons</option>
+        </select>
+      </div>
+      
       <button @click="fetchComparisonData" class="compare-btn">Comparer</button>
     </div>
     
@@ -56,36 +64,7 @@
         <h3>{{ getChartTitle() }}</h3>
         
         <div class="chart-container">
-          <!-- Pour l'instant, la visualisation est simulée -->
-          <!-- En production, vous utiliseriez Chart.js ou une autre bibliothèque -->
-          <div class="chart-placeholder">
-            <div class="chart-placeholder-content">
-              <div class="chart-legend">
-                <div v-for="(station, index) in selectedStations" :key="station" class="legend-item">
-                  <span class="legend-color" :style="{ backgroundColor: getChartColor(index) }"></span>
-                  <span>{{ getStationName(station) }}</span>
-                </div>
-              </div>
-              
-              <div class="chart-placeholder-graph">
-                <!-- Barre verticale simulée pour chaque station -->
-                <div v-for="(station, index) in selectedStations" :key="station" 
-                     class="chart-bar" 
-                     :style="{ 
-                       height: getRandomHeight() + '%', 
-                       backgroundColor: getChartColor(index),
-                       left: (index * (100 / selectedStations.length)) + '%',
-                       width: (90 / selectedStations.length) + '%'
-                     }">
-                </div>
-              </div>
-              
-              <div class="chart-placeholder-note">
-                <p>Dans l'implémentation finale, ceci serait un graphique interactif créé avec Chart.js.</p>
-                <p>Pour l'implémenter: <code>npm install chart.js vue-chartjs</code></p>
-              </div>
-            </div>
-          </div>
+          <canvas :key="chartType" ref="chartCanvas" height="400"></canvas>
         </div>
       </div>
     </div>
@@ -94,13 +73,20 @@
 
 <script>
 import { getSampleData } from '@/services/api';
+import Chart from 'chart.js/auto';
+
+
 
 export default {
   name: 'Stations',
   data() {
     return {
+      
+      useRealApi: false, // activer l'API
       selectedData: 'temperature',
       timeRange: 'day',
+      chartType: 'line', // 'line' ou 'bar'
+      chart: null, // Référence à l'instance du graphique
       loading: false,
       stations: [
         { id: 'piensg027', name: 'Station 27' },
@@ -109,7 +95,7 @@ export default {
         { id: 'piensg031', name: 'Station 31' },
         { id: 'piensg032', name: 'Station 32' }
       ],
-      selectedStations: ['piensg027', 'piensg032'], // Par défaut, sélectionnez quelques stations
+      selectedStations: ['piensg027', 'piensg032'], 
       chartData: {
         labels: [],
         datasets: []
@@ -126,6 +112,21 @@ export default {
   mounted() {
     // Charger les données initiales
     this.fetchComparisonData();
+  },
+  beforeUnmount() {
+    // Détruire le graphique quand le composant est démonté
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+  },
+  watch: {
+    // Mettre à jour le graphique quand le type de graphique change
+    chartType() {
+      if (this.chartData.labels.length > 0) {
+        this.updateChart();
+      }
+    }
   },
   methods: {
     async fetchComparisonData() {
@@ -156,19 +157,75 @@ export default {
             break;
         }
         
-        // En production, vous feriez des appels API réels:
-        /*
-        const startDateIso = startDate.toISOString();
-        
-        // Récupérer les données pour chaque station sélectionnée
-        const datasets = [];
-        for (const stationId of this.selectedStations) {
-          const response = await getSampleSensorData(startDateIso, [this.selectedData]);
-          // Traiter les données et les ajouter aux datasets...
+        // Décider si on utilise l'API réelle ou les données mockées
+        if (this.useRealApi) {
+          try {
+            // Utilisation de l'API réelle
+            const startDateIso = startDate.toISOString();
+            console.log('Tentative de récupération des données depuis', startDateIso);
+            
+            
+            const realDatasets = [];
+            let apiSuccess = false;
+            
+            for (const stationId of this.selectedStations) {
+              try {
+                const response = await getSampleData(startDateIso);
+                console.log('Réponse API pour', stationId, response);
+                
+                
+                if (response && response.data && response.data.length > 0) {
+                  
+                  const dataset = {
+                    label: this.getStationName(stationId),
+                    data: response.data.map(item => item[this.selectedData] || 0),
+                    borderColor: this.getChartColor(this.selectedStations.indexOf(stationId)),
+                    backgroundColor: this.getChartColor(this.selectedStations.indexOf(stationId))
+                  };
+                  
+                  realDatasets.push(dataset);
+                  apiSuccess = true;
+                }
+              } catch (error) {
+                console.warn(`Erreur pour ${stationId}:`, error);
+              }
+            }
+            
+            
+            if (apiSuccess && realDatasets.length > 0) {
+              
+              const labels = [];
+              const points = 10;
+              
+              for (let i = 0; i < points; i++) {
+                const date = new Date(startDate);
+                const increment = (now.getTime() - startDate.getTime()) / (points - 1) * i;
+                date.setTime(startDate.getTime() + increment);
+                
+                labels.push(date.toLocaleString([], { 
+                  hour: '2-digit', 
+                  minute: '2-digit',
+                  day: 'numeric',
+                  month: 'short'
+                }));
+              }
+              
+              this.chartData = {
+                labels,
+                datasets: realDatasets
+              };
+              
+              return; 
+            }
+          } catch (apiError) {
+            console.error('Erreur API générale:', apiError);
+          }
+          
+          
+          console.warn('L\'API a échoué, utilisation de données simulées');
         }
-        */
         
-        // Pour le moment, générer des données simulées
+        // Utiliser des données simulées (par défaut ou en cas d'échec de l'API)
         this.generateMockChartData();
       } catch (error) {
         console.error('Erreur lors de la récupération des données de comparaison:', error);
@@ -178,7 +235,7 @@ export default {
     },
     
     generateMockChartData() {
-      // Générer des labels (dates) pour l'axe X
+      
       const labels = [];
       const now = new Date();
       const points = 10;
@@ -187,28 +244,28 @@ export default {
         const date = new Date(now);
         switch (this.timeRange) {
           case 'hour':
-            date.setMinutes(now.getMinutes() - (i * 6)); // Toutes les 6 minutes
+            date.setMinutes(now.getMinutes() - (i * 6)); 
             labels.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
             break;
           case 'day':
-            date.setHours(now.getHours() - (i * 2)); // Toutes les 2 heures
+            date.setHours(now.getHours() - (i * 2)); 
             labels.push(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
             break;
           case 'week':
-            date.setDate(now.getDate() - i); // Chaque jour
+            date.setDate(now.getDate() - i); 
             labels.push(date.toLocaleDateString([], { weekday: 'short', day: 'numeric' }));
             break;
           case 'month':
-            date.setDate(now.getDate() - (i * 3)); // Tous les 3 jours
+            date.setDate(now.getDate() - (i * 3)); 
             labels.push(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
             break;
         }
       }
       
-      // Générer des données aléatoires pour chaque station
+      
       const datasets = this.selectedStations.map((stationId, index) => {
         const data = Array(points).fill().map(() => {
-          // Valeurs aléatoires selon le type de données
+          
           switch (this.selectedData) {
             case 'temperature':
               return Math.random() * 10 + 10; // 10-20°C
@@ -239,6 +296,9 @@ export default {
         labels,
         datasets
       };
+      
+      // Mettre à jour le graphique
+      this.updateChart();
     },
     
     getStationName(stationId) {
@@ -270,9 +330,85 @@ export default {
       return `${dataTypeLabels[this.selectedData] || this.selectedData} - ${timeLabels[this.timeRange] || this.timeRange}`;
     },
     
-    getRandomHeight() {
-      // Pour la simulation des barres de graphique
-      return Math.random() * 50 + 30; // 30-80%
+    updateChart() {
+      // Attendre que le DOM soit mis à jour
+      this.$nextTick(() => {
+        try {
+          const chartElement = this.$refs.chartCanvas;
+          if (!chartElement) {
+            console.error("Élément canvas introuvable");
+            return;
+          }
+          
+          // Détruire le graphique existant s'il y en a un
+          if (this.chart) {
+            this.chart.destroy();
+            this.chart = null;
+          }
+          
+          // Créer un nouveau graphique avec le type sélectionné (bar ou line)
+          const ctx = chartElement.getContext('2d');
+          
+          // S'assurer que les données sont valides
+          if (!this.chartData || !this.chartData.datasets || this.chartData.datasets.length === 0) {
+            console.warn("Pas de données disponibles pour le graphique");
+            return;
+          }
+          
+          this.chart = new Chart(ctx, {
+            type: this.chartType,
+            data: this.chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: this.getChartTitle()
+                },
+                tooltip: {
+                  mode: 'index',
+                  intersect: false
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  title: {
+                    display: true,
+                    text: this.getYAxisTitle()
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date/Heure'
+                  }
+                }
+              }
+            }
+          });
+        } catch (error) {
+          console.error("Erreur lors de la création du graphique:", error);
+        }
+      });
+    },
+    
+    // Retourne le titre de l'axe Y en fonction du type de donnée sélectionné
+    getYAxisTitle() {
+      const units = {
+        temperature: '°C',
+        humidity: '%',
+        pressure: 'hPa',
+        wind_speed_avg: 'km/h',
+        luminosity: 'Lux',
+        rain: 'mm'
+      };
+      
+      return units[this.selectedData] || '';
     }
   }
 }
@@ -361,7 +497,6 @@ export default {
   position: relative;
 }
 
-/* Styles pour le placeholder de graphique */
 .chart-placeholder {
   width: 100%;
   height: 100%;
