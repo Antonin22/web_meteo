@@ -1,0 +1,7 @@
+[Unit]
+Description=meteodata
+
+[Service]
+WorkingDirectory=/home/pi/meteodata/myapp/
+ExecStartPre=/usr/bin/npm install
+ExecStart=/usr/bin/npm run start
