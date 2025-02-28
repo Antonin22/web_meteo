@@ -126,7 +126,7 @@ router.get('/:list_capteur', function (req, res, next) {
     'wind_heading': '°',
     'wind_speed_avg': 'km/h',
     'lat': 'DD',
-    'long': 'DD'
+    'lon': 'DD'
   };
 
   requestedSensors.forEach(sensor => {
