@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { getLiveData } from '@/services/api';
+import { getStationData } from '@/services/stationApi';
 import Sensor from '@/components/Sensor.vue';
 
 export default {
@@ -149,13 +149,13 @@ export default {
       if (this.useRealApi) {
         
         try {
-          console.log('Tentative de récupération des données réelles');
-          const liveData = await getLiveData();
+          console.log(`Tentative de récupération des données réelles pour station ${this.stationId}`);
+          const stationData = await getStationData(this.stationId);
           
-          if (liveData && liveData.data) {
-            this.data = liveData.data;
-            this.unit = liveData.unit;
-            console.log('Données réelles récupérées:', liveData);
+          if (stationData && stationData.data) {
+            this.data = stationData.data;
+            this.unit = stationData.unit;
+            console.log('Données réelles récupérées:', stationData);
             this.loading = false;
             return;
           } else {
