@@ -11,11 +11,11 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist',
+    outDir: 'public',
+    assetsDir: 'assets',
+    emptyOutDir: false,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'src/main.js')
-      }
+      input: 'index.html'
     }
   },
   server: {
