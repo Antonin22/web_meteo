@@ -8,7 +8,7 @@ const writeClient = client.getWriteApi('ENSG', 'db32', 'ns');
 
 
 function readSensorsFile() {
-    fs.readFile('./dev/shm/sensors', 'utf8', (error, data) => {
+    fs.readFile('/dev/shm/sensors', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture sensors:', error);
             return;
@@ -30,7 +30,7 @@ function readSensorsFile() {
 }
 
 function readRainCounterFile() {
-    fs.readFile('./dev/shm/rainCounter.log', 'utf8', (error, data) => {
+    fs.readFile('/dev/shm/rainCounter.log', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture rainCounter:', error);
             return;
@@ -49,7 +49,7 @@ function readRainCounterFile() {
 }
 
 function readGPSFile() {
-    fs.readFile('./dev/shm/gpsNmea', 'utf8', (error, data) => {
+    fs.readFile('/dev/shm/gpsNmea', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture GPS:', error);
             return;
