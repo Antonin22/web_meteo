@@ -11,7 +11,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'public/dist',
+    outDir: 'dist',
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'src/main.js')

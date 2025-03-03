@@ -8,7 +8,9 @@
     "scriptjs": "node ./script.js",
     "dev": "vite",
     "build": "vite build",
-    "dev:all": "concurrently \"npm run start\" \"npm run dev\""
+    "dev:all": "concurrently \"npm run start\" \"npm run dev\"",
+    "setup": "npm install && npm run build",
+    "production": "concurrently \"npm run scriptjs\" \"npm run start\""
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.35.0",
