@@ -79,7 +79,7 @@ function readGPSFile() {
 }
 
 function readTPHFile() {
-    fs.readFile('./dev/shm/tph.log', 'utf8', (error, data) => {
+    fs.readFile('/dev/shm/tph.log', 'utf8', (error, data) => {
         if (error) {
             console.error('Erreur lecture TPG:', error);
             return;
