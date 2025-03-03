@@ -10,11 +10,20 @@ const STATION_ENDPOINTS = {
 import mockData from '../../public/mock-data.json';
 
 export async function getStationData(stationId) {
+  // Vérifier si stationId est un objet Event (peut se produire avec les gestionnaires d'événements)
+  if (stationId && stationId.target && stationId.target.value) {
+    stationId = stationId.target.value;
+  }
 
   if (!stationId) {
     stationId = 'piensg032';
   }
 
+  // S'assurer que stationId est une chaîne
+  if (typeof stationId !== 'string') {
+    console.error("stationId n'est pas une chaîne valide:", stationId);
+    stationId = 'piensg032';
+  }
 
   const stationUrl = STATION_ENDPOINTS[stationId];
   if (!stationUrl) {
@@ -39,6 +48,11 @@ export async function getStationData(stationId) {
 
 
 function getMockData(stationId) {
+  // Vérifier que stationId est une chaîne
+  if (typeof stationId !== 'string') {
+    console.error("stationId n'est pas une chaîne de caractères:", stationId);
+    stationId = 'piensg032'; // Utiliser une valeur par défaut
+  }
 
   const stationNumber = stationId.replace('piensg', '');
 
