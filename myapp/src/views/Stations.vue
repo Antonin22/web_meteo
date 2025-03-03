@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { getSampleData } from '@/services/api';
+import { getSampleData } from '@/services/stationApi';
 import Chart from 'chart.js/auto';
 
 
@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       
-      useRealApi: false, // activer l'API
+      useRealApi: true, // activer l'API
       selectedData: 'temperature',
       timeRange: 'day',
       chartType: 'line', // 'line' ou 'bar'
@@ -170,7 +170,8 @@ export default {
             
             for (const stationId of this.selectedStations) {
               try {
-                const response = await getSampleData(startDateIso);
+                // Appel du getSampleData avec l'ID de la station
+                const response = await getSampleData(stationId, startDateIso, 'now', this.selectedData);
                 console.log('Réponse API pour', stationId, response);
                 
                 

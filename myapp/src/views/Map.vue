@@ -13,6 +13,7 @@
 <script>
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { getStationData } from '@/services/stationApi';
 
 export default {
   name: 'MapView',
@@ -82,11 +83,21 @@ export default {
         // Pour chaque station, récupérer les données de température
         for (const station of this.stations) {
           try {
-            // En production, utilisez votre API:
-            // const response = await getLiveSensorData(['temperature']);
+            // Utiliser notre nouvelle API pour récupérer les données
+            const stationData = await getStationData(station.id);
             
-            // Pour le développement, utiliser des données aléatoires
-            const temperature = Math.floor(Math.random() * 15) + 5; // Entre 5 et 20°C
+            let temperature;
+            
+            if (stationData && stationData.data && stationData.data.temperature) {
+              // Si on a réussi à récupérer les données réelles
+              temperature = stationData.data.temperature;
+              console.log(`Température réelle pour ${station.id}: ${temperature}°C`);
+            } else {
+              // Sinon utiliser des données aléatoires
+              temperature = Math.floor(Math.random() * 15) + 5; // Entre 5 et 20°C
+              console.log(`Température aléatoire pour ${station.id}: ${temperature}°C`);
+            }
+            
             this.stationsData[station.id] = { temperature };
             
             // Trouver le marqueur correspondant
