@@ -1,8 +1,8 @@
 const STATION_ENDPOINTS = {
-  'piensg027': 'http://piensg027.ensg.eu:3000/',
-  'piensg028': 'http://piensg028.ensg.eu:3000/',
-  'piensg030': 'http://piensg030.ensg.eu:3000/',
-  'piensg031': 'http://piensg031.ensg.eu:3000/',
+  'piensg027': 'http://piensg027.ensg.eu:3000/live',
+  'piensg028': 'http://piensg028.ensg.eu:3000/live',
+  'piensg030': 'http://piensg030.ensg.eu:3000/live',
+  'piensg031': 'http://piensg031.ensg.eu:3000/live',
   'piensg032': '/live'
 };
 
