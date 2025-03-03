@@ -88,6 +88,7 @@ function processSensorData(row, tableMeta, requestedSensors, filteredData) {
     }
 }
 
+// Modifié pour utiliser un objet avec des dates comme clés plutôt qu'un tableau
 function organizeTimeSeriesData(data) {
     const timeMap = new Map();
 
@@ -104,15 +105,11 @@ function organizeTimeSeriesData(data) {
         });
     });
 
-    const result = [];
+    // Au lieu de retourner un tableau, retourner un objet avec les dates comme clés
+    const result = {};
     timeMap.forEach((values, time) => {
-        result.push({
-            time: time,
-            ...values
-        });
+        result[time] = values;
     });
-
-    result.sort((a, b) => new Date(a.time) - new Date(b.time));
 
     return result;
 }
@@ -169,6 +166,7 @@ router.get('/:start/now/:list_capteur?', function (req, res, next) {
             res.status(500).send(error);
         },
         complete: () => {
+            // Transformer le tableau en objet avec des dates comme clés
             filteredData.data = organizeTimeSeriesData(filteredData.data);
 
             console.log('\nSuccess');
@@ -240,6 +238,7 @@ router.get('/:start/:stop/:list_capteur?', function (req, res, next) {
             res.status(500).send(error);
         },
         complete: () => {
+            // Transformer le tableau en objet avec des dates comme clés
             filteredData.data = organizeTimeSeriesData(filteredData.data);
 
             console.log('\nSuccess');
