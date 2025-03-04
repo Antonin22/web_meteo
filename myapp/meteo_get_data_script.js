@@ -92,6 +92,7 @@ function readTPHFile() {
                 .floatField('humidity', tpg.hygro)
                 .floatField('pressure', tpg.press)
                 .timestamp(new Date(tpg.date));
+            console.log(point);
             writeClient.writePoint(point);
         } catch (parseError) {
             console.error('Erreur parsing TPG:', parseError);
