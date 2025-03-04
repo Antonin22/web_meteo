@@ -1,5 +1,5 @@
 [Unit]
-Description=meteodata
+Description=meteoapi
 
 [Service]
 WorkingDirectory=/home/pi/meteodata/myapp/
