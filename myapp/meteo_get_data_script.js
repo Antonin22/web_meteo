@@ -68,6 +68,7 @@ function readGPSFile() {
                             .floatField('latitude', latitude)
                             .floatField('longitude', longitude)
                             .timestamp(new Date());
+                        console.log(point);
                         writeClient.writePoint(point);
                     }
                 }
