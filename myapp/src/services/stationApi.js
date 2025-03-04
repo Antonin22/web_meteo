@@ -4,10 +4,9 @@ const STATION_BASE_URLS = {
   'piensg028': 'http://piensg028.ensg.eu:3000',
   'piensg030': 'http://piensg030.ensg.eu:3000',
   'piensg031': 'http://piensg031.ensg.eu:3000',
-  'piensg032': '' // URL relative pour notre propre serveur
+  'piensg032': ''
 };
 
-// Endpoints pour les données en direct
 const STATION_ENDPOINTS = {
   'piensg027': `${STATION_BASE_URLS['piensg027']}/live`,
   'piensg028': `${STATION_BASE_URLS['piensg028']}/live`,
@@ -20,7 +19,7 @@ const STATION_ENDPOINTS = {
 import mockData from '../../public/mock-data.json';
 
 export async function getStationData(stationId) {
-  // Vérifier si stationId est un objet Event (peut se produire avec les gestionnaires d'événements)
+
   if (stationId && stationId.target && stationId.target.value) {
     stationId = stationId.target.value;
   }
@@ -29,7 +28,7 @@ export async function getStationData(stationId) {
     stationId = 'piensg032';
   }
 
-  // S'assurer que stationId est une chaîne
+
   if (typeof stationId !== 'string') {
     console.error("stationId n'est pas une chaîne valide:", stationId);
     stationId = 'piensg032';
@@ -56,16 +55,9 @@ export async function getStationData(stationId) {
   }
 }
 
-/**
- * Récupère les données historiques pour une station spécifique
- * @param {string} stationId - L'ID de la station (ex: 'piensg032')
- * @param {string} start - Date de début au format ISO (ex: '2023-01-01T00:00:00Z')
- * @param {string} end - Date de fin au format ISO, ou 'now' pour l'heure actuelle
- * @param {string} sensors - Liste des capteurs séparés par des tirets (ex: 'temperature-humidity')
- * @returns {Promise<Object>} - Les données historiques de la station
- */
+
 export async function getSampleData(stationId, start, end, sensors = '') {
-  // Validation et nettoyage des entrées
+
   if (stationId && stationId.target && stationId.target.value) {
     stationId = stationId.target.value;
   }
@@ -74,33 +66,32 @@ export async function getSampleData(stationId, start, end, sensors = '') {
     stationId = 'piensg032';
   }
 
-  // Construction de l'URL
   const baseUrl = STATION_BASE_URLS[stationId] || '';
   let sampleUrl;
-  
+
   if (end === 'now') {
     sampleUrl = `${baseUrl}/sample/${start}/now`;
   } else {
     sampleUrl = `${baseUrl}/sample/${start}/${end}`;
   }
-  
-  // Ajouter les capteurs s'ils sont spécifiés
+
+
   if (sensors) {
     sampleUrl += `/${sensors}`;
   }
 
   try {
     const response = await fetch(sampleUrl);
-    
+
     if (!response.ok) {
       throw new Error(`Erreur lors de la récupération des données: ${response.status}`);
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
     console.error(`Erreur lors de la requête sample pour ${stationId}:`, error);
-    // Retourner un objet vide en cas d'erreur
+
     return {
       id: stationId.replace('piensg', ''),
       unit: {},
@@ -111,10 +102,10 @@ export async function getSampleData(stationId, start, end, sensors = '') {
 
 
 function getMockData(stationId) {
-  // Vérifier que stationId est une chaîne
+
   if (typeof stationId !== 'string') {
     console.error("stationId n'est pas une chaîne de caractères:", stationId);
-    stationId = 'piensg032'; // Utiliser une valeur par défaut
+    stationId = 'piensg032';
   }
 
   const stationNumber = stationId.replace('piensg', '');

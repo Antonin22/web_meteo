@@ -72,7 +72,17 @@ export default {
           this.stations.forEach(station => {
             const coord = this.stationsCoordinates[station.id];
             if (coord && coord.lat && coord.lon) {
-              const marker = L.marker([coord.lat, coord.lon])
+              // Correction: Définir l'icône du marqueur explicitement
+              const marker = L.marker([coord.lat, coord.lon], {
+                icon: L.icon({
+                  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                  iconSize: [25, 41],
+                  iconAnchor: [12, 41],
+                  popupAnchor: [1, -34],
+                  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                  shadowSize: [41, 41]
+                })
+              })
                 .addTo(this.map)
                 .bindPopup(`<b>${station.name}</b><br>Température: --°C<br>Latitude: ${coord.lat}<br>Longitude: ${coord.lon}`);
               

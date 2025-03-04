@@ -25,7 +25,7 @@
       }
     },
     methods: {
-      onChange() {
+      onChange(event) {
         this.$emit('change', this.selected)
       }
     }
